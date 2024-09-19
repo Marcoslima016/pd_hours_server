@@ -21,3 +21,14 @@ export const createSquad = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to create squad' });
     }
 };
+
+export const getAllSquads = async (req: Request, res: Response) => {
+    try {
+        const result = await pool.query('SELECT * FROM Squads');
+        const squads = result.rows;
+        res.status(200).json(squads);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to retrieve squads' });
+    }
+};
