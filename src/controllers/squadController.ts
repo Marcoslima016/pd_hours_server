@@ -1,22 +1,23 @@
 import { Request, Response } from 'express';
-import { supabase } from '../services/supabaseClient';
+import { pool } from '../services/dbClient';
 
 export const createSquad = async (req: Request, res: Response) => {
     const { name } = req.body;
-
-    console.log("CREATE SQUAD!");
 
     if (!name) {
         return res.status(400).json({ error: 'Name is required' });
     }
 
-    const { data, error } = await supabase
-        .from('Squads')
-        .insert([{ name }]);
+    try {
+        const result = await pool.query(
+            'INSERT INTO Squads (name) VALUES ($1) RETURNING *',
+            [name]
+        );
 
-    if (error) {
-        return res.status(500).json({ error: error.message });
+        const squad = result.rows[0];
+        res.status(201).json({ message: 'Squad created successfully', squad });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create squad' });
     }
-
-    res.status(201).json({ message: 'Squad created successfully', squad: data });
 };
