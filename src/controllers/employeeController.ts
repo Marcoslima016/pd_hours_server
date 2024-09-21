@@ -8,9 +8,9 @@ export const createEmployee = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Name, estimatedHours and squadId are required' });
     }
 
-    if (estimatedHours < 1 || estimatedHours > 12) {
-        return res.status(400).json({ error: 'Estimated hours must be between 1 and 12' });
-    }
+    // if (estimatedHours < 1 || estimatedHours > 12) {
+    //     return res.status(400).json({ error: 'Estimated hours must be between 1 and 12' });
+    // }
 
     try {
         // Verifica se o Squad existe
@@ -34,5 +34,17 @@ export const createEmployee = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to create employee' });
+    }
+};
+
+
+export const getAllEmployees = async (req: Request, res: Response) => {
+    try {
+        const result = await pool.query('SELECT * FROM Employees');
+        const employees = result.rows;
+        res.status(200).json(employees);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to retrieve employees' });
     }
 };
